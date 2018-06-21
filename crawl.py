@@ -61,11 +61,11 @@ class Crawler():
 
         for data in content['data5']:
             sign = '-' if data[9].find('green') > 0 else ''
-            double_quote_for_csv_tse = '"'
+            double_quote_for_csv_tse = '\"'
             
             row = self._clean_row([
                 double_quote_for_csv_tse + date_str_western_tse + double_quote_for_csv_tse, # 日期
-                data[2], # 成交股數
+                double_quote_for_csv_tse + data[2] + double_quote_for_csv_tse, # 成交股數
                 data[4], # 成交金額
                 data[5], # 開盤價
                 data[6], # 最高價
@@ -91,7 +91,7 @@ class Crawler():
 
         result = page.json()
         
-        double_quote_for_csv_otc = '"'
+        double_quote_for_csv_otc = '\"'
         
         if result['reportDate'] != date_str:
             logging.error("Get error date OTC data at {}".format(date_str))
@@ -100,8 +100,8 @@ class Crawler():
         for table in [result['mmData'], result['aaData']]:
             for tr in table:
                 row = self._clean_row([
-                    double_quote_for_csv_otc + date_str_western_otc + ,
-                    tr[8], # 成交股數
+                    double_quote_for_csv_otc + date_str_western_otc + double_quote_for_csv_otc,
+                    double_quote_for_csv_otc + tr[8] + double_quote_for_csv_otc, # 成交股數
                     tr[9], # 成交金額
                     tr[4], # 開盤價
                     tr[5], # 最高價
