@@ -56,11 +56,15 @@ class Crawler():
 
         # For compatible with original data
         date_str_mingguo = '{0}/{1:02d}/{2:02d}'.format(date_tuple[0] - 1911, date_tuple[1], date_tuple[2])
+        # From Jerry 
+        date_str_western_tse = '{0}/{1:02d}/{2:02d}'.format(date_tuple[0], date_tuple[1], date_tuple[2])
 
         for data in content['data5']:
             sign = '-' if data[9].find('green') > 0 else ''
+            double_quote_for_csv_tse = '"'
+            
             row = self._clean_row([
-                date_str_mingguo, # 日期
+                double_quote_for_csv_tse + date_str_western_tse + double_quote_for_csv_tse, # 日期
                 data[2], # 成交股數
                 data[4], # 成交金額
                 data[5], # 開盤價
@@ -75,6 +79,8 @@ class Crawler():
 
     def _get_otc_data(self, date_tuple):
         date_str = '{0}/{1:02d}/{2:02d}'.format(date_tuple[0] - 1911, date_tuple[1], date_tuple[2])
+        date_str_western_otc = '{0}/{1:02d}/{2:02d}'.format(date_tuple[0], date_tuple[1], date_tuple[2])
+        
         ttime = str(int(time.time()*100))
         url = 'http://www.tpex.org.tw/web/stock/aftertrading/daily_close_quotes/stk_quote_result.php?l=zh-tw&d={}&_={}'.format(date_str, ttime)
         page = requests.get(url)
@@ -84,7 +90,9 @@ class Crawler():
             return
 
         result = page.json()
-
+        
+        double_quote_for_csv_otc = '"'
+        
         if result['reportDate'] != date_str:
             logging.error("Get error date OTC data at {}".format(date_str))
             return
@@ -92,7 +100,7 @@ class Crawler():
         for table in [result['mmData'], result['aaData']]:
             for tr in table:
                 row = self._clean_row([
-                    date_str,
+                    double_quote_for_csv_otc + date_str_western_otc + ,
                     tr[8], # 成交股數
                     tr[9], # 成交金額
                     tr[4], # 開盤價
